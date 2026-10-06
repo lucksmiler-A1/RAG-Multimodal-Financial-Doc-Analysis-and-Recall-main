@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rag-financial.fullname" . }}
+  labels:
+    {{- include "rag-financial.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "rag-financial.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "rag-financial.selectorLabels" . | nindent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.service.metricsPort }}"
+    spec:
+      # Keep in sync with config.shutdownDrainTimeoutSeconds (default 30s):
+      # terminationGracePeriodSeconds should exceed preStop sleep + drain timeout.
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds | default 45 }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- range .Values.topologySpreadConstraints }}
+        - maxSkew: {{ .maxSkew }}
+          topologyKey: {{ .topologyKey }}
+          whenUnsatisfiable: {{ .whenUnsatisfiable }}
+          labelSelector:
+            matchLabels:
+              {{- include "rag-financial.selectorLabels" $ | nindent 14 }}
+        {{- end }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8000
+              name: http
+            - containerPort: 8001
+              name: metrics
+          envFrom:
+            - secretRef:
+                name: {{ include "rag-financial.fullname" . }}-secrets
+            - configMapRef:
+                name: {{ include "rag-financial.fullname" . }}-config
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          lifecycle:
+            preStop:
+              exec:
+                # Lets the Service/Ingress deregister this pod's endpoint
+                # before SIGTERM triggers the app's connection-draining
+                # shutdown handler — avoids routing new traffic to a pod
+                # that is already shutting down.
+                command: ["/bin/sh", "-c", "sleep {{ .Values.preStopSleepSeconds | default 10 }}"]
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 10

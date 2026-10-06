@@ -1,0 +1,135 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# RAG Financial Multimodal — .gitignore
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+MANIFEST
+pip-log.txt
+
+# ── Virtual environments ──────────────────────────────────────────────────────
+.venv/
+.venv*/
+venv/
+env/
+ENV/
+
+# ── Testing & Coverage ────────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# ── Type checking ─────────────────────────────────────────────────────────────
+.mypy_cache/
+.dmypy.json
+.pyre/
+
+# ── IDEs ──────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+desktop.ini
+
+# ── Secrets & credentials — NEVER COMMIT ─────────────────────────────────────
+.env
+.env.local
+.env.*.local
+.env.secret
+*.key
+*.pem
+secrets/
+.secrets/
+credentials.json
+auth.json
+token
+tokens
+service_account.json
+
+# ── Data & model artifacts ────────────────────────────────────────────────────
+data/
+*.pkl
+*.pickle
+*.npy
+*.npz
+*.pt
+*.pth
+*.h5
+*.onnx
+*.joblib
+*.ckpt
+*.avif
+*.bin
+
+# ── Vector stores ─────────────────────────────────────────────────────────────
+.deeplake/
+chroma_db/
+vectorstore/
+*.index
+*.faiss
+
+# ── Jupyter ───────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ── Logs & audit ─────────────────────────────────────────────────────────────
+logs/
+audit_logs/
+*.log
+
+# ── Eval artifacts ────────────────────────────────────────────────────────────
+evals/history.json
+evals/ci_report.json
+evals/eval_results/
+
+# ── Build / packaging ─────────────────────────────────────────────────────────
+*.whl
+*.tar.gz
+site/
+__pypackages__/
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+docker-compose.override.yml
+
+# ── Monitoring ───────────────────────────────────────────────────────────────
+prometheus_data/
+grafana_data/
+
+# ── Temp ─────────────────────────────────────────────────────────────────────
+*.tmp
+*.temp
+*.bak
+tmp/
+
+# ── Node (frontend tooling) ───────────────────────────────────────────────────
+node_modules/
+package-lock.json
